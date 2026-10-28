@@ -1257,6 +1257,8 @@ table.et{width:100%;min-width:560px;border-collapse:collapse;font-variant-numeri
 .team .lead{margin-inline:auto}
 .people{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,340px));justify-content:center;gap:clamp(24px,4vw,56px);margin-top:56px}
 .person{display:flex;flex-direction:column;align-items:center}
+.person .plink{display:block;border-radius:50%;text-decoration:none;color:inherit}
+.person .plink:focus-visible{outline:2px solid var(--wall-accent);outline-offset:12px}
 .round{position:relative;width:min(230px,100%);aspect-ratio:1;border-radius:50%;overflow:hidden;display:grid;place-items:center;
   background:radial-gradient(38% 30% at 32% 24%,rgba(255,255,255,.9),transparent 70%),radial-gradient(70% 70% at 50% 45%,#F1EFEC,#E2DED9 62%,#CEC8C2);
   box-shadow:0 0 0 8px var(--mirror),0 0 0 9px rgba(0,0,0,.15),0 30px 40px -24px rgba(0,0,0,.6);transition:box-shadow .45s var(--ease)}
@@ -1491,9 +1493,9 @@ body.nomo *,body.nomo *::before,body.nomo *::after{animation:none!important;tran
       <div class="slots">
         <span class="lbl"><svg class="ico"><use href="#i-cal"/></svg>Najbliższe wolne terminy na wizytę za 1 zł</span>
         <div class="row">
-          <a class="slot" href="#" data-booksy><b>jutro</b> 17:30</a>
-          <a class="slot" href="#" data-booksy><b>pt. 23.10</b> 10:30</a>
-          <a class="slot" href="#" data-booksy><b>pon. 26.10</b> 9:00</a>
+          <a class="slot" href="#" data-booksy data-staffer="864116"><b>jutro</b> 17:30</a>
+          <a class="slot" href="#" data-booksy data-staffer="864116"><b>pt. 23.10</b> 10:30</a>
+          <a class="slot" href="#" data-booksy data-staffer="864116"><b>pon. 26.10</b> 9:00</a>
         </div>
         <span class="also num"><!--ceny:od-->Laser od 25 zł · Elektroepilacja od 100 zł / 30 min<!--/ceny:od--></span>
         <span class="tag">Terminy przykładowe. W produkcji z Booksy</span>
@@ -1604,9 +1606,9 @@ body.nomo *,body.nomo *::before,body.nomo *::after{animation:none!important;tran
     <h2>Zespół</h2>
     <p class="lead">Trzy specjalistki. Cena elektroepilacji zależy od poziomu.</p>
     <div class="people">
-      <!--ceny:zespol--><div class="person"><div class="round"><h3>Angelina</h3></div><p class="lvl">Instruktorka</p><p>Elektroepilacja twarzy, ciała i męskiego bikini.</p><p class="pr num">1 godz.: ciało 240 zł · twarz 300 zł</p><a class="btn ghost" href="#" data-booksy>Umów do Angeliny</a></div>
-      <div class="person"><div class="round"><h3>Katia</h3></div><p class="lvl">Top specjalistka</p><p>Elektroepilacja i depilacja laserowa.</p><p class="pr num">1 godz.: ciało 180 zł · twarz 200 zł</p><a class="btn ghost" href="#" data-booksy>Umów do Kati</a></div>
-      <div class="person"><div class="round"><h3>Ania</h3></div><p class="lvl">Młodsza specjalistka</p><p>Elektroepilacja ciała.</p><p class="pr num">1 godz.: ciało 100 zł</p><a class="btn ghost" href="#" data-booksy>Umów do Ani</a></div><!--/ceny:zespol-->
+      <!--ceny:zespol--><div class="person"><a class="plink" href="#" data-booksy data-staffer="848488" aria-label="Angelina w Booksy"><div class="round"><h3>Angelina</h3></div></a><p class="lvl">Instruktorka</p><p>Elektroepilacja twarzy, ciała i męskiego bikini.</p><p class="pr num">1 godz.: ciało 240 zł · twarz 300 zł</p><a class="btn ghost" href="#" data-booksy data-staffer="848488">Umów do Angeliny</a></div>
+      <div class="person"><a class="plink" href="#" data-booksy data-staffer="864114" aria-label="Katia w Booksy"><div class="round"><h3>Katia</h3></div></a><p class="lvl">Top specjalistka</p><p>Elektroepilacja i depilacja laserowa.</p><p class="pr num">1 godz.: ciało 180 zł · twarz 200 zł</p><a class="btn ghost" href="#" data-booksy data-staffer="864114">Umów do Kati</a></div>
+      <div class="person"><a class="plink" href="#" data-booksy data-staffer="864116" aria-label="Ania w Booksy"><div class="round"><h3>Ania</h3></div></a><p class="lvl">Młodsza specjalistka</p><p>Elektroepilacja ciała.</p><p class="pr num">1 godz.: ciało 100 zł</p><a class="btn ghost" href="#" data-booksy data-staffer="864116">Umów do Ani</a></div><!--/ceny:zespol-->
     </div>
   </section>
 
@@ -1699,7 +1701,8 @@ const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelecto
 const rnd=(a,b)=>a+Math.random()*(b-a),clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
 const zl=n=>Math.round(n).toLocaleString("pl-PL")+"\u00a0zł";
 let motion=!reduce;if(reduce)document.body.classList.replace("mo","nomo");
-$$("[data-booksy]").forEach(a=>{a.href=BOOKSY;a.target="_blank";a.rel="noopener"});
+/* data-staffer opens that master's own Booksy page (her services, consultation included) */
+$$("[data-booksy]").forEach(a=>{a.href=a.dataset.staffer?`${BOOKSY}/staffer/${a.dataset.staffer}`:BOOKSY;a.target="_blank";a.rel="noopener"});
 $$("[data-tel]").forEach(a=>a.href=TEL);
 
 /* ---------- 1. HERO FOG ---------- */
