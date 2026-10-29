@@ -1435,6 +1435,14 @@ html:not([lang="pl"]) body{font-variant-numeric:lining-nums}
   .shelf .act .btn{padding-inline:16px}
   .first{gap:14px}.first .v{font-size:40px}
 }
+/* touch devices: a lighter wall. The blobs stand still and nothing blurs the page behind it while scrolling */
+@media (pointer:coarse){
+  .mesh i{animation:none!important;will-change:auto}
+  header.top,.mbar,.wc,.ftw{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+  header.top{background:color-mix(in srgb,var(--chrome) 97%,transparent)}
+  .mbar{background:color-mix(in srgb,var(--chrome) 98%,transparent)!important}
+  .wc{background-color:color-mix(in srgb,var(--wall) 88%,#fff 8%)}  /* without the blur the card itself hides the relief */
+}
 /* font tweak panel (only with ?fonty in the address; for the owner, not for visitors) */
 .ftw{position:fixed;left:16px;bottom:16px;z-index:80;width:272px;padding:14px 14px 12px;border-radius:14px;background:color-mix(in srgb,var(--chrome) 96%,transparent);backdrop-filter:blur(14px);color:var(--on-wall);box-shadow:inset 0 0 0 1px var(--chrome-line),0 18px 40px -16px rgba(0,0,0,.6);font:13px/1.35 system-ui,-apple-system,sans-serif}
 .ftw b{display:flex;justify-content:space-between;align-items:center;font-size:13px;margin-bottom:8px}
@@ -2053,14 +2061,17 @@ $$(".city:not(.langs) a").forEach(a=>a.addEventListener("click",()=>{try{localSt
 /* the relief light follows the cursor; without a mouse it slowly circles the page; with motion off it stays put */
 const pls=[...document.querySelectorAll(".relief .pl")];let ltx=innerWidth*.3,lty=innerHeight*.25,lcx=ltx,lcy=lty,lUser=false;const lt0=performance.now();
 if(!matchMedia("(pointer:coarse)").matches)addEventListener("pointermove",e=>{lUser=true;ltx=e.clientX;lty=e.clientY},{passive:true});
-(function reliefLoop(t){if(!lUser&&motion){const a=(t-lt0)/9000;ltx=innerWidth*(.5+.32*Math.cos(a));lty=innerHeight*(.45+.3*Math.sin(a*1.3))}
+/* touch screens: the light is placed once; animating it re-renders the full-screen SVG lighting filter every frame */
+const reliefStill=matchMedia("(pointer:coarse)").matches;
+(function reliefLoop(t){if(!lUser&&motion&&!reliefStill){const a=(t-lt0)/9000;ltx=innerWidth*(.5+.32*Math.cos(a));lty=innerHeight*(.45+.3*Math.sin(a*1.3))}
   const nx=lcx+(ltx-lcx)*.12,ny=lcy+(lty-lcy)*.12;
   if(Math.abs(nx-lcx)>.3||Math.abs(ny-lcy)>.3){lcx=nx;lcy=ny;for(const l of pls){l.setAttribute("x",(lcx/2).toFixed(1));l.setAttribute("y",(lcy/2).toFixed(1))}}
-  requestAnimationFrame(reliefLoop)})(lt0);
+  if(!reliefStill||Math.abs(ltx-lcx)>.3||Math.abs(lty-lcy)>.3)requestAnimationFrame(reliefLoop)})(lt0);
 
 /* ---------- boot ---------- */
 zones();price();
-let rt;addEventListener("resize",()=>{clearTimeout(rt);rt=setTimeout(()=>{fogInit();hairInit()},150)});
+/* only a change of width redraws the fog and the lens: on phones the address bar changes the height while scrolling */
+let rt,lastW=innerWidth;addEventListener("resize",()=>{clearTimeout(rt);rt=setTimeout(()=>{if(innerWidth===lastW)return;lastW=innerWidth;fogInit();hairInit()},150)});
 (document.fonts?document.fonts.ready:Promise.resolve()).then(()=>{fogInit();hairInit();requestAnimationFrame(whileVisible(hm,fogLoop));requestAnimationFrame(whileVisible(mag,hairFrame));setTimeout(handSweep,500)});
 /* ---------- FONT TWEAKS (hidden: ?fonty in the address turns the panel on for this device, ?fonty=0 off) ---------- */
 {const q=new URLSearchParams(location.search).get("fonty"),store=(k,v)=>{try{v===undefined?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){}},read=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
